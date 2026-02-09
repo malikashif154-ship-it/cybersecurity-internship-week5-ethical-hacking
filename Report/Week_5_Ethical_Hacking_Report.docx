@@ -1,0 +1,58 @@
+Cybersecurity Internship– Week 5 Report 
+Intern Name: Muhammad Ali Kashif
+Project: Security Testing on OWASP Juice Shop
+Week: 5
+Objective
+The objective of this week was to develop practical skills in ethical hacking by identifying potential vulnerabilities in a controlled test environment and implementing appropriate security measures to enhance application protection.
+Tools and Technologies Used
+•	Kali Linux
+•	OWASP Juice Shop
+•	WhatWeb
+•	Gobuster
+•	SQLMap
+•	Burp Suite
+Task 1 – Reconnaissance:
+Initial reconnaissance was conducted on the OWASP Juice Shop web application hosted on localhost. The purpose of this phase was to gather information about the application structure, technologies in use, and publicly accessible directories.
+Commands Executed:
+•	whatweb http://localhost:3000
+•	gobuster dir -u http://localhost:3000 -w /usr/share/wordlists/dirb/common.txt --exclude-length 75055
+Key Findings:
+•	The application utilizes HTML5 and JQuery.
+•	Multiple directories were discovered, including /ftp, /api, and /assets.
+•	Directory enumeration provided insight into potentially sensitive endpoints.
+Screenshot: Terminal output displaying WhatWeb and Gobuster results
+ 
+ 
+Task 2 – SQL Injection Testing (Completed)
+SQLMap was used to analyze the login request and detect possible SQL injection vulnerabilities. The tool automated the testing process by evaluating parameters for injection flaws.
+Command Executed:
+•	sqlmap -r login.txt --batch --dbs
+Result: The scan did not reveal any exploitable SQL injection vulnerabilities. This suggests that the application has basic protections in place against common injection attacks.
+Screenshot: SQLMap scan
+SQL Injection Prevention
+To mitigate SQL injection risks, prepared statements should be implemented instead of dynamically constructing queries.
+Vulnerable Example:
+const query = "SELECT * FROM users WHERE email='" + req.body.email + "' AND password='" + req.body.password + "'";
+Secure Implementation Using Prepared Statements:
+const query = "SELECT * FROM users WHERE email = ? AND password = ?";
+db.query(query, [req.body.email, req.body.password]);
+Task 3 – CSRF Testing and Protection (Completed)
+Burp Suite was configured as an intercepting proxy to capture HTTP requests between the browser and the application. During analysis, the login request was observed without a CSRF token, indicating a potential risk where unauthorized requests could be executed on behalf of authenticated users.
+Screenshot: Burp Suite intercept displaying the POST login request.
+ 
+Security Fix:
+•	Install middleware:
+•	npm install csurf
+Implementation:
+const csrf = require('csurf');
+const csrfProtection = csrf();
+app.use(csrfProtection);
+The inclusion of CSRF tokens ensures that requests originate from trusted sources, significantly reducing the likelihood of cross-site request forgery attacks.
+Vulnerabilities Identified
+•	Potential CSRF vulnerability due to absence of token validation.
+•	Exposure of directories that could assist attackers during reconnaissance.
+•	No confirmed SQL injection vulnerability detected during automated testing.
+Conclusion
+This week provided valuable hands-on experience with industry-standard ethical hacking tools and techniques. The activities strengthened my understanding of reconnaissance, vulnerability assessment, and secure coding practices. By applying prepared statements and CSRF protection, the overall security posture of the application can be significantly improved.
+
+All testing activities were conducted in a controlled laboratory environment strictly for educational purposes.
